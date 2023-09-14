@@ -1,0 +1,27 @@
+---
+title: get data
+---
+
+
+Specify a bounding box of Indian Ocean.
+```{r message=FALSE}
+library(dplyr)
+library(sf)
+extent_polygon <- sf::st_bbox(c(xmin = 20.125, xmax = 146.125, 
+                            ymax = -27.125, ymin = 22.125), 
+                          #Assign reference system
+                          crs = sf::st_crs(4326)) %>% st_as_sfc()
+pol_geometry <- sf::st_as_text(extent_polygon[[1]])
+obs <- robis::occurrence("Thunnus", startdate = "2005-01-01", enddate = "2012-12-31", geometry = pol_geometry)
+write.csv(obs, file="tuna_io.csv")
+```
+
+```{r}
+library(mapview)
+require(dplyr)
+library(sf)
+obs_sf <- obs %>% as_tibble() %>% 
+  st_as_sf(coords = c("decimalLongitude", "decimalLatitude"), crs = 4326)
+mapview(obs_sf, col.regions = "gray")
+```
+
